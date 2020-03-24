@@ -40,6 +40,7 @@ const bulkAppointmentsClashesController = require('./controllers/appointments/bu
 
 const changeCaseloadController = require('./controllers/changeCaseloadController')
 const addAppointmentController = require('./controllers/appointments/addAppointmentController')
+const retentionReasonsController = require('./controllers/datacompliance/retentionReasonsController')
 const addCourtAppointmentController = require('./controllers/appointments/courtController')
 const confirmAppointmentController = require('./controllers/appointments/confirmAppointmentController')
 const prepostAppointmentController = require('./controllers/appointments/prepostAppointmentsController')
@@ -187,6 +188,7 @@ const setup = ({ elite2Api, whereaboutsApi, oauthApi, communityApi }) => {
     res.render('terms', { mailTo: config.app.mailTo, homeLink: config.app.notmEndpointUrl })
   })
 
+  router.use('/offenders/:offenderNo/retention-reasons', retentionReasonsController({ logError }))
   router.use('/offenders/:offenderNo/add-appointment', addAppointmentController({ elite2Api, logError }))
   router.use('/offenders/:offenderNo/confirm-appointment', confirmAppointmentController({ elite2Api, logError }))
   router.use(
