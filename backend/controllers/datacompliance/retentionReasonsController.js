@@ -3,8 +3,8 @@ const { retentionReasonsFactory } = require('./retentionReasons')
 
 const router = express.Router({ mergeParams: true })
 
-const controller = ({ logError }) => {
-  const { index } = retentionReasonsFactory(logError)
+const controller = ({ elite2Api, logError }) => {
+  const { index } = retentionReasonsFactory(elite2Api, logError)
 
   router.get('/', index)
 
