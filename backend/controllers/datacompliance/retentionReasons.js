@@ -16,15 +16,20 @@ const retentionReasonsFactory = (elite2Api, logError) => {
   const renderTemplate = async (req, res) => {
     try {
       const { offenderNo } = req.params
-      const offenderBasics = await elite2Api.getDetails(res.locals, offenderNo)
+      const offenderDetails = await elite2Api.getDetails(res.locals, offenderNo)
       const agencies = await elite2Api.getAgencies(res.locals)
-      const agency = agencies.find(a => a.agencyId === offenderBasics.agencyId).description
+      const agency = agencies.find(a => a.agencyId === offenderDetails.agencyId).description
       const offenderUrl = getOffenderUrl(offenderNo)
 
       return res.render('retentionReasons.njk', {
-        offenderUrl,
-        offenderBasics,
         agency,
+        offenderUrl,
+        offenderBasics: {
+          offenderNo: offenderDetails.offenderNo,
+          firstName: offenderDetails.firstName,
+          lastName: offenderDetails.lastName,
+          dateOfBirth: offenderDetails.dateOfBirth,
+        },
       })
     } catch (error) {
       return renderError(req, res, error)
