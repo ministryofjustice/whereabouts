@@ -34,6 +34,7 @@ describe('retention reasons', () => {
     elite2Api.getDetails = jest.fn()
     elite2Api.getAgencies = jest.fn()
     dataComplianceApi.getOffenderRetentionReasons = jest.fn()
+    dataComplianceApi.getOffenderRetentionRecord = jest.fn()
 
     controller = retentionReasonsFactory(elite2Api, dataComplianceApi, logError)
   })
@@ -67,6 +68,14 @@ describe('retention reasons', () => {
             displayOrder: 0,
           },
         ])
+        dataComplianceApi.getOffenderRetentionRecord.mockResolvedValue({
+          retentionReasons: [
+            {
+              reasonCode: 'OTHER',
+              reasonDetails: 'Some other reason',
+            },
+          ],
+        })
       })
 
       it('should make the correct calls for information and render the correct template', async () => {
@@ -82,11 +91,15 @@ describe('retention reasons', () => {
               reasonCode: 'HIGH_PROFILE',
               displayName: 'High Profile Offenders',
               displayOrder: 0,
+              alreadySelected: false,
+              details: undefined,
             },
             {
               reasonCode: 'OTHER',
               displayName: 'Other',
               displayOrder: 1,
+              alreadySelected: true,
+              details: 'Some other reason',
             },
           ],
           offenderBasics: {

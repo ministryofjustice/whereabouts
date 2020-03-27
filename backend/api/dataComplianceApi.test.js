@@ -10,7 +10,7 @@ describe('data compliance api', () => {
     let actual
 
     beforeEach(() => {
-      client.get = jest.fn().mockReturnValue({ then: () => response })
+      client.get = jest.fn().mockResolvedValue({ then: () => response })
       actual = dataComplianceApi.getOffenderRetentionReasons(context)
     })
 
@@ -19,7 +19,7 @@ describe('data compliance api', () => {
     })
 
     it('should return response from endpoint', () => {
-      expect(actual).toEqual(response)
+      expect(actual).resolves.toEqual(response)
     })
   })
 
@@ -28,7 +28,7 @@ describe('data compliance api', () => {
     let actual
 
     beforeEach(() => {
-      client.get = jest.fn().mockReturnValue({ then: () => response })
+      client.get = jest.fn().mockResolvedValue({ then: () => response })
       actual = dataComplianceApi.getOffenderRetentionRecord(context, 'A1234BC')
     })
 
@@ -37,7 +37,7 @@ describe('data compliance api', () => {
     })
 
     it('should return response from endpoint', () => {
-      expect(actual).toEqual(response)
+      expect(actual).resolves.toEqual(response)
     })
   })
 })

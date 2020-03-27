@@ -69,7 +69,8 @@
           classes: "govuk-!-width-one-third",
           label: {
             text: "Please give details"
-          }
+          },
+          value: reason.details
         }) }}
         {% endset -%}
 
@@ -78,6 +79,7 @@
             id: "retention-reason-" + reason.reasonCode,
             value: reason.reasonCode, 
             text: reason.displayName, 
+            checked: reason.alreadySelected,
             conditional: { 
               html: moreDetail
             } if reason.allowReasonDetails
@@ -121,11 +123,11 @@
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
               <h3 class="govuk-heading-s">Date of change</h3>
-              <p>{{ dateOfChange }}</p>
+              <p>{{ modifiedDateTime }}</p>
             </div>
             <div class="govuk-grid-column-one-half">
               <h4 class="govuk-heading-s">Staff ID</h4>
-              <p>{{ staffId }}</p>
+              <p>{{ userId }}</p>
             </div>
           </div>
         </div>

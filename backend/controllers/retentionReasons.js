@@ -4,32 +4,48 @@ const {
 const { serviceUnavailableMessage } = require('../common-messages')
 
 const retentionReasonsFactory = (elite2Api, dataComplianceApi, logError) => {
+  const sortReasonsByDisplayOrder = reasons => reasons.sort((r1, r2) => (r1.displayOrder > r2.displayOrder ? 1 : -1))
+
+  const getAgencyDescription = (agencies, agencyId) => {
+    const agency = agencies.find(a => a.agencyId === agencyId)
+    return agency ? agency.description : 'Unknown'
+  }
+
   const getOffenderUrl = offenderNo => `${dpsUrl}offenders/${offenderNo}`
 
   const renderError = (req, res, error) => {
     const { offenderNo } = req.params
     if (error) logError(req.originalUrl, error, serviceUnavailableMessage)
-
     return res.render('error.njk', { url: getOffenderUrl(offenderNo) })
+  }
+
+  const flagReasonsAlreadySelected = (retentionReasons, existingRecord) => {
+    const existingReasons = existingRecord && existingRecord.retentionReasons
+    const matchingReason = reason1 => reason2 => reason1.reasonCode === reason2.reasonCode
+
+    return retentionReasons.map(reasonToDisplay => {
+      const reason = reasonToDisplay
+      const matchedReason = existingReasons && existingReasons.find(matchingReason(reasonToDisplay))
+      reason.alreadySelected = matchedReason != null
+      reason.details = matchedReason && matchedReason.reasonDetails
+      return reason
+    })
   }
 
   const renderTemplate = async (req, res) => {
     try {
       const { offenderNo } = req.params
-      const offenderUrl = getOffenderUrl(offenderNo)
-      const [offenderDetails, agencies, retentionReasons] = await Promise.all([
+      const [offenderDetails, agencies, retentionReasons, existingRecord] = await Promise.all([
         elite2Api.getDetails(res.locals, offenderNo),
         elite2Api.getAgencies(res.locals),
-        dataComplianceApi
-          .getOffenderRetentionReasons(res.locals)
-          .then(reasons => reasons.sort((r1, r2) => (r1.displayOrder > r2.displayOrder ? 1 : -1))),
+        dataComplianceApi.getOffenderRetentionReasons(res.locals).then(sortReasonsByDisplayOrder),
+        dataComplianceApi.getOffenderRetentionRecord(res.locals, offenderNo),
       ])
-      const agency = agencies.find(a => a.agencyId === offenderDetails.agencyId).description
 
       return res.render('retentionReasons.njk', {
-        agency,
-        offenderUrl,
-        retentionReasons,
+        agency: getAgencyDescription(agencies, offenderDetails.agencyId),
+        offenderUrl: getOffenderUrl(offenderNo),
+        retentionReasons: flagReasonsAlreadySelected(retentionReasons, existingRecord),
         offenderBasics: {
           offenderNo: offenderDetails.offenderNo,
           firstName: offenderDetails.firstName,
