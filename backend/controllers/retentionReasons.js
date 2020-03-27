@@ -20,7 +20,9 @@ const retentionReasonsFactory = (elite2Api, dataComplianceApi, logError) => {
       const [offenderDetails, agencies, retentionReasons] = await Promise.all([
         elite2Api.getDetails(res.locals, offenderNo),
         elite2Api.getAgencies(res.locals),
-        dataComplianceApi.getOffenderRetentionReasons(res.locals),
+        dataComplianceApi
+          .getOffenderRetentionReasons(res.locals)
+          .then(reasons => reasons.sort((r1, r2) => (r1.displayOrder > r2.displayOrder ? 1 : -1))),
       ])
       const agency = agencies.find(a => a.agencyId === offenderDetails.agencyId).description
 

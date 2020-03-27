@@ -55,10 +55,16 @@ describe('retention reasons', () => {
             description: 'Leeds',
           },
         ])
-        dataComplianceApi.getOffenderRetentionReasons.mockReturnValue([
+        dataComplianceApi.getOffenderRetentionReasons.mockResolvedValue([
+          {
+            reasonCode: 'OTHER',
+            displayName: 'Other',
+            displayOrder: 1,
+          },
           {
             reasonCode: 'HIGH_PROFILE',
             displayName: 'High Profile Offenders',
+            displayOrder: 0,
           },
         ])
       })
@@ -75,6 +81,12 @@ describe('retention reasons', () => {
             {
               reasonCode: 'HIGH_PROFILE',
               displayName: 'High Profile Offenders',
+              displayOrder: 0,
+            },
+            {
+              reasonCode: 'OTHER',
+              displayName: 'Other',
+              displayOrder: 1,
             },
           ],
           offenderBasics: {
@@ -91,6 +103,7 @@ describe('retention reasons', () => {
       beforeEach(() => {
         req.params.offenderNo = offenderNo
         elite2Api.getDetails.mockRejectedValue(new Error('Network error'))
+        dataComplianceApi.getOffenderRetentionReasons.mockResolvedValue([])
       })
 
       it('should render the error template', async () => {
