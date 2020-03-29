@@ -15,14 +15,20 @@ const dataComplianceApiFactory = client => {
 
   const get = (context, url) => client.get(context, url).then(processResponse(context))
 
+  const put = (context, url, data) => client.put(context, url, data).then(processResponse(context))
+
   const getOffenderRetentionReasons = context => get(context, `/retention/offenders/retention-reasons`)
 
   const getOffenderRetentionRecord = (context, offenderNo) =>
     get(context, `/retention/offenders/${offenderNo}`).catch(map404ToNull)
 
+  const putOffenderRetentionRecord = (context, offenderNo, body) =>
+    put(context, `/retention/offenders/${offenderNo}`, body)
+
   return {
     getOffenderRetentionReasons,
     getOffenderRetentionRecord,
+    putOffenderRetentionRecord,
   }
 }
 

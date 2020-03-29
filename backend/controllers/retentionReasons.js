@@ -1,3 +1,4 @@
+const qs = require('qs')
 const {
   app: { notmEndpointUrl: dpsUrl },
 } = require('../config')
@@ -13,11 +14,7 @@ const retentionReasonsFactory = (elite2Api, dataComplianceApi, logError) => {
 
   const getOffenderUrl = offenderNo => `${dpsUrl}offenders/${offenderNo}`
 
-  const renderError = (req, res, error) => {
-    const { offenderNo } = req.params
-    if (error) logError(req.originalUrl, error, serviceUnavailableMessage)
-    return res.render('error.njk', { url: getOffenderUrl(offenderNo) })
-  }
+  const getFormAction = offenderNo => `/offenders/${offenderNo}/retention-reasons`
 
   const flagReasonsAlreadySelected = (retentionReasons, existingRecord) => {
     const existingReasons = existingRecord && existingRecord.retentionReasons
@@ -32,6 +29,12 @@ const retentionReasonsFactory = (elite2Api, dataComplianceApi, logError) => {
     })
   }
 
+  const renderError = (req, res, error) => {
+    const { offenderNo } = req.params
+    if (error) logError(req.originalUrl, error, serviceUnavailableMessage)
+    return res.render('error.njk', { url: getOffenderUrl(offenderNo) })
+  }
+
   const renderTemplate = async (req, res) => {
     try {
       const { offenderNo } = req.params
@@ -43,6 +46,7 @@ const retentionReasonsFactory = (elite2Api, dataComplianceApi, logError) => {
       ])
 
       return res.render('retentionReasons.njk', {
+        formAction: getFormAction(offenderNo),
         agency: getAgencyDescription(agencies, offenderDetails.agencyId),
         offenderUrl: getOffenderUrl(offenderNo),
         retentionReasons: flagReasonsAlreadySelected(retentionReasons, existingRecord),
@@ -60,7 +64,23 @@ const retentionReasonsFactory = (elite2Api, dataComplianceApi, logError) => {
 
   const index = async (req, res) => renderTemplate(req, res)
 
-  return { index }
+  const post = async (req, res) => {
+    try {
+      const { offenderNo } = req.params
+      const { reasons } = qs.parse(req.body)
+      const optionsSelected = reasons.filter(reason => reason.reasonCode)
+
+      await dataComplianceApi.putOffenderRetentionRecord(res.locals, offenderNo, {
+        retentionReasons: optionsSelected,
+      })
+
+      return res.redirect(getOffenderUrl(offenderNo))
+    } catch (error) {
+      return renderError(req, res, error)
+    }
+  }
+
+  return { index, post }
 }
 
 module.exports = {

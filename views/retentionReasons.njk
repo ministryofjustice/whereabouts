@@ -60,12 +60,15 @@
       <h1 class="govuk-heading-l">{{ title }}</h1>
 
       {% set reasonOptions = [] %}
-      {% for reason in retentionReasons %}
+
+      {% for i in range(0, retentionReasons | length) %}
+
+        {% set reason = retentionReasons[i] %}
 
         {% set moreDetail %}
         {{ govukTextarea({
           id: "more-detail-" + reason.reasonCode,
-          name: "more-detail",
+          name: "reasons[" + i + "][reasonDetails]",
           classes: "govuk-!-width-one-third",
           label: {
             text: "Please give details"
@@ -77,6 +80,7 @@
         {% set reasonOptions = (reasonOptions.push(
           { 
             id: "retention-reason-" + reason.reasonCode,
+            name: "reasons[" + i + "][reasonCode]",
             value: reason.reasonCode, 
             text: reason.displayName, 
             checked: reason.alreadySelected,
@@ -84,35 +88,37 @@
               html: moreDetail
             } if reason.allowReasonDetails
           }), reasonOptions) %}
+
       {% endfor %}
 
-      {{ govukCheckboxes({
-        name: "retention-reasons",
-        fieldset: {
-          legend: {
-            text: subtitle,
-            classes: "govuk-fieldset__legend--m"
-          }
-        },
-        hint: {
-          text: instructions 
-        },
-        items: reasonOptions 
-      }) }}
+      <form action={{ formAction }} method="POST">
+        {{ govukCheckboxes({
+          fieldset: {
+            legend: {
+              text: subtitle,
+              classes: "govuk-fieldset__legend--m"
+            }
+          },
+          hint: {
+            text: instructions 
+          },
+          items: reasonOptions 
+        }) }}
 
-      {{ govukButton({
-        text: "Update",
-        classes: "govuk-!-margin-right-1",
-        preventDoubleClick: true,
-        disabled: true
-      }) }}
+        {{ govukButton({
+          text: "Update",
+          type: "submit",
+          classes: "govuk-!-margin-right-1",
+          preventDoubleClick: true
+        }) }}
       
-      {{ govukButton({
-        text: "Cancel",
-        classes: "govuk-button--secondary",
-        preventDoubleClick: true,
-        disabled: true
-      }) }}
+        {{ govukButton({
+          text: "Cancel",
+          classes: "govuk-button--secondary",
+          preventDoubleClick: true,
+          href: offenderUrl
+        }) }}
+      </form>
 
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
 
@@ -123,11 +129,11 @@
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
               <h3 class="govuk-heading-s">Date of change</h3>
-              <p>{{ modifiedDateTime }}</p>
+              <p>{{ dateOfChange }}</p>
             </div>
             <div class="govuk-grid-column-one-half">
               <h4 class="govuk-heading-s">Staff ID</h4>
-              <p>{{ userId }}</p>
+              <p>{{ staffId }}</p>
             </div>
           </div>
         </div>

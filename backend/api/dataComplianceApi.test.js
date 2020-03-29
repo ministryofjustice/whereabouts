@@ -6,30 +6,31 @@ const context = { some: 'context' }
 
 describe('data compliance api', () => {
   describe('get offender retention reasons', () => {
-    const response = { some: 'response' }
+    const expectedResponse = { some: 'response' }
     let actual
 
-    beforeEach(() => {
-      client.get = jest.fn().mockResolvedValue({ then: () => response })
-      actual = dataComplianceApi.getOffenderRetentionReasons(context)
+    beforeEach(async () => {
+      client.get = jest.fn().mockResolvedValue({ body: expectedResponse })
+      actual = await dataComplianceApi.getOffenderRetentionReasons(context)
     })
 
     it('should call the correct endpoint', () => {
       expect(client.get).toBeCalledWith(context, '/retention/offenders/retention-reasons')
     })
 
-    it('should return response from endpoint', () => {
-      expect(actual).resolves.toEqual(response)
+    it('should return response from endpoint', async () => {
+      // const actualResponse = await actual;
+      expect(actual).toEqual(expectedResponse)
     })
   })
 
   describe('get offender retention record', () => {
-    const response = { some: 'response' }
+    const responseBody = { some: 'response' }
     let actual
 
-    beforeEach(() => {
-      client.get = jest.fn().mockResolvedValue({ then: () => response })
-      actual = dataComplianceApi.getOffenderRetentionRecord(context, 'A1234BC')
+    beforeEach(async () => {
+      client.get = jest.fn().mockResolvedValue({ body: responseBody })
+      actual = await dataComplianceApi.getOffenderRetentionRecord(context, 'A1234BC')
     })
 
     it('should call the correct endpoint', () => {
@@ -37,7 +38,13 @@ describe('data compliance api', () => {
     })
 
     it('should return response from endpoint', () => {
-      expect(actual).resolves.toEqual(response)
+      expect(actual).toEqual(responseBody)
+    })
+
+    it('should return null if 404 received', async () => {
+      client.get = jest.fn().mockRejectedValue({ response: { status: 404 } })
+      const errorResponse = await dataComplianceApi.getOffenderRetentionRecord(context, 'A1234BC')
+      expect(errorResponse).toEqual(null)
     })
   })
 })

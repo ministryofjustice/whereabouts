@@ -85,6 +85,7 @@ describe('retention reasons', () => {
         expect(elite2Api.getAgencies).toHaveBeenCalledWith(res.locals)
         expect(res.render).toHaveBeenCalledWith('retentionReasons.njk', {
           agency: 'Leeds',
+          formAction: '/offenders/ABC123/retention-reasons',
           offenderUrl: 'http://localhost:3000/offenders/ABC123',
           retentionReasons: [
             {
