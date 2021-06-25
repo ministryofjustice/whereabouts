@@ -1,4 +1,5 @@
 const { app } = require('../config')
+const { readableDateFormat } = require('../utils')
 
 /**
  * Education skills and work experience (ESWE)
@@ -38,6 +39,61 @@ class EsweService {
     return {
       enabled: app.esweEnabled,
       content,
+    }
+  }
+
+  async getFunctionalSkillsLevels(nomisId) {
+    if (!app.esweEnabled) {
+      return {
+        enabled: app.esweEnabled,
+        content: [],
+      }
+    }
+
+    const content = await this.#curiousApi.getFunctionalSkillsLevels(nomisId)
+
+    const filterSkillsAndGetLatestGrade = (functionalSkillLevels, skillToFilter) =>
+      functionalSkillLevels[0].qualifications
+        .filter(functionalSkillLevel => functionalSkillLevel.qualification.qualificationType === skillToFilter)
+        .sort((a, b) => new Date(b.qualification.assessmentDate) - new Date(a.qualification.assessmentDate))[0]
+
+    const englishSkillLevels = filterSkillsAndGetLatestGrade(content, 'English') || { skill: 'English/Welsh' }
+    const mathsSkillLevels = filterSkillsAndGetLatestGrade(content, 'Maths') || { skill: 'Maths' }
+    const digiLitSkillLevels = filterSkillsAndGetLatestGrade(content, 'Digital Literacy') || {
+      skill: 'Digital Literacy',
+    }
+
+    const createSkillAssessmentSummary = skillAssessment => {
+      if (!skillAssessment.qualification) return [{ label: skillAssessment.skill, value: 'Awaiting assessment' }]
+
+      const { qualificationType, qualificationGrade, assessmentDate } = skillAssessment.qualification
+      const { establishmentName } = skillAssessment
+
+      return [
+        {
+          label: qualificationType === 'English' ? 'English/Welsh' : qualificationType,
+          value: qualificationGrade,
+        },
+        {
+          label: 'Date',
+          value: readableDateFormat(assessmentDate, 'YYYY-MM-DD'),
+        },
+        {
+          label: 'Location',
+          value: establishmentName,
+        },
+      ]
+    }
+
+    const functionalSkillLevels = {
+      english: createSkillAssessmentSummary(englishSkillLevels),
+      maths: createSkillAssessmentSummary(mathsSkillLevels),
+      digiLit: createSkillAssessmentSummary(digiLitSkillLevels),
+    }
+
+    return {
+      enabled: app.esweEnabled,
+      content: functionalSkillLevels,
     }
   }
 }
