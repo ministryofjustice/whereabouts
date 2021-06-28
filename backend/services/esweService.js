@@ -75,7 +75,7 @@ class EsweService {
           value: qualificationGrade,
         },
         {
-          label: 'Date',
+          label: 'Assessment Date',
           value: readableDateFormat(assessmentDate, 'YYYY-MM-DD'),
         },
         {
