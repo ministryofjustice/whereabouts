@@ -54,7 +54,7 @@ class EsweService {
 
     const filterSkillsAndGetLatestGrade = (functionalSkillLevels, skillToFilter) =>
       functionalSkillLevels[0].qualifications
-        .filter(functionalSkillLevel => functionalSkillLevel.qualification.qualificationType === skillToFilter)
+        .filter((functionalSkillLevel) => functionalSkillLevel.qualification.qualificationType === skillToFilter)
         .sort((a, b) => new Date(b.qualification.assessmentDate) - new Date(a.qualification.assessmentDate))[0]
 
     const englishSkillLevels = filterSkillsAndGetLatestGrade(content, 'English') || { skill: 'English/Welsh' }
@@ -63,7 +63,7 @@ class EsweService {
       skill: 'Digital Literacy',
     }
 
-    const createSkillAssessmentSummary = skillAssessment => {
+    const createSkillAssessmentSummary = (skillAssessment) => {
       if (!skillAssessment.qualification) return [{ label: skillAssessment.skill, value: 'Awaiting assessment' }]
 
       const { qualificationType, qualificationGrade, assessmentDate } = skillAssessment.qualification
@@ -75,11 +75,11 @@ class EsweService {
           value: qualificationGrade,
         },
         {
-          label: 'Assessment Date',
+          label: 'Assessment date',
           value: readableDateFormat(assessmentDate, 'YYYY-MM-DD'),
         },
         {
-          label: 'Location',
+          label: 'Assessment location',
           value: establishmentName,
         },
       ]
