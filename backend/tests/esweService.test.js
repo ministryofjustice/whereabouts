@@ -16,7 +16,7 @@ describe('Education skills and work experience', () => {
   let service
   beforeEach(() => {
     curiousApi.getLearnerProfiles = jest.fn()
-    curiousApi.getFunctionalSkillsLevels = jest.fn()
+    curiousApi.getLearnerLatestAssessments = jest.fn()
     service = EsweService.create(curiousApi, prisonApi)
   })
 
@@ -104,7 +104,7 @@ describe('Education skills and work experience', () => {
         }
 
         jest.spyOn(app, 'esweEnabled', 'get').mockReturnValue(true)
-        curiousApi.getFunctionalSkillsLevels.mockResolvedValue([dummyFunctionalSkillsLevels])
+        curiousApi.getLearnerLatestAssessments.mockResolvedValue([dummyFunctionalSkillsLevels])
         const expectedResult = {
           digiLit: [
             { label: 'Digital Literacy', value: 'Entry Level 2' },
@@ -123,11 +123,11 @@ describe('Education skills and work experience', () => {
           ],
         }
 
-        const actual = await service.getFunctionalSkillsLevels(nomisId)
+        const actual = await service.getLearnerLatestAssessments(nomisId)
         expect(actual.enabled).toBeTruthy()
         expect(actual.content).toStrictEqual(expectedResult)
-        expect(curiousApi.getFunctionalSkillsLevels).toHaveBeenCalledTimes(1)
-        expect(curiousApi.getFunctionalSkillsLevels).toHaveBeenCalledWith(nomisId)
+        expect(curiousApi.getLearnerLatestAssessments).toHaveBeenCalledTimes(1)
+        expect(curiousApi.getLearnerLatestAssessments).toHaveBeenCalledWith(nomisId)
       })
       it('should return expected assessments when there are multiple assessments for a subject available', async () => {
         const dummyFunctionalSkillsLevels = {
@@ -173,7 +173,7 @@ describe('Education skills and work experience', () => {
         }
 
         jest.spyOn(app, 'esweEnabled', 'get').mockReturnValue(true)
-        curiousApi.getFunctionalSkillsLevels.mockResolvedValue([dummyFunctionalSkillsLevels])
+        curiousApi.getLearnerLatestAssessments.mockResolvedValue([dummyFunctionalSkillsLevels])
 
         const expectedResult = {
           digiLit: [
@@ -193,11 +193,11 @@ describe('Education skills and work experience', () => {
           ],
         }
 
-        const actual = await service.getFunctionalSkillsLevels(nomisId)
+        const actual = await service.getLearnerLatestAssessments(nomisId)
         expect(actual.enabled).toBeTruthy()
         expect(actual.content).toStrictEqual(expectedResult)
-        expect(curiousApi.getFunctionalSkillsLevels).toHaveBeenCalledTimes(1)
-        expect(curiousApi.getFunctionalSkillsLevels).toHaveBeenCalledWith(nomisId)
+        expect(curiousApi.getLearnerLatestAssessments).toHaveBeenCalledTimes(1)
+        expect(curiousApi.getLearnerLatestAssessments).toHaveBeenCalledWith(nomisId)
       })
       it('should return expected response when there are no assessments available for a subject', async () => {
         const dummyFunctionalSkillsLevels = {
@@ -225,7 +225,7 @@ describe('Education skills and work experience', () => {
         }
 
         jest.spyOn(app, 'esweEnabled', 'get').mockReturnValue(true)
-        curiousApi.getFunctionalSkillsLevels.mockResolvedValue([dummyFunctionalSkillsLevels])
+        curiousApi.getLearnerLatestAssessments.mockResolvedValue([dummyFunctionalSkillsLevels])
         const expectedResult = {
           digiLit: [
             { label: 'Digital Literacy', value: 'Entry Level 2' },
@@ -240,11 +240,11 @@ describe('Education skills and work experience', () => {
           maths: [{ label: 'Maths', value: 'Awaiting assessment' }],
         }
 
-        const actual = await service.getFunctionalSkillsLevels(nomisId)
+        const actual = await service.getLearnerLatestAssessments(nomisId)
         expect(actual.enabled).toBeTruthy()
         expect(actual.content).toStrictEqual(expectedResult)
-        expect(curiousApi.getFunctionalSkillsLevels).toHaveBeenCalledTimes(1)
-        expect(curiousApi.getFunctionalSkillsLevels).toHaveBeenCalledWith(nomisId)
+        expect(curiousApi.getLearnerLatestAssessments).toHaveBeenCalledTimes(1)
+        expect(curiousApi.getLearnerLatestAssessments).toHaveBeenCalledWith(nomisId)
       })
     })
   })

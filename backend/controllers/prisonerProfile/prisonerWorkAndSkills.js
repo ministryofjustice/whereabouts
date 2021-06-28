@@ -1,17 +1,19 @@
 const logErrorAndContinue = require('../../shared/logErrorAndContinue')
 
-module.exports = ({ prisonerProfileService, esweService }) => async (req, res) => {
-  const { offenderNo } = req.params
+module.exports =
+  ({ prisonerProfileService, esweService }) =>
+  async (req, res) => {
+    const { offenderNo } = req.params
 
-  const [prisonerProfileData, functionalSkillLevels] = await Promise.all(
-    [
-      prisonerProfileService.getPrisonerProfileData(res.locals, offenderNo),
-      esweService.getFunctionalSkillsLevels(offenderNo),
-    ].map(apiCall => logErrorAndContinue(apiCall))
-  )
+    const [prisonerProfileData, functionalSkillLevels] = await Promise.all(
+      [
+        prisonerProfileService.getPrisonerProfileData(res.locals, offenderNo),
+        esweService.getLearnerLatestAssessments(offenderNo),
+      ].map((apiCall) => logErrorAndContinue(apiCall))
+    )
 
-  return res.render('prisonerProfile/prisonerWorkAndSkills/prisonerWorkAndSkills.njk', {
-    prisonerProfileData,
-    functionalSkillLevels,
-  })
-}
+    return res.render('prisonerProfile/prisonerWorkAndSkills/prisonerWorkAndSkills.njk', {
+      prisonerProfileData,
+      functionalSkillLevels,
+    })
+  }

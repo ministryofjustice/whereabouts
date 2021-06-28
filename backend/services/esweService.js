@@ -42,7 +42,7 @@ class EsweService {
     }
   }
 
-  async getFunctionalSkillsLevels(nomisId) {
+  async getLearnerLatestAssessments(nomisId) {
     if (!app.esweEnabled) {
       return {
         enabled: app.esweEnabled,
@@ -50,7 +50,7 @@ class EsweService {
       }
     }
 
-    const content = await this.#curiousApi.getFunctionalSkillsLevels(nomisId)
+    const content = await this.#curiousApi.getLearnerLatestAssessments(nomisId)
 
     const filterSkillsAndGetLatestGrade = (functionalSkillLevels, skillToFilter) =>
       functionalSkillLevels[0].qualifications
